@@ -1,0 +1,22 @@
+services:
+  ghost:
+    image: ghost:6.20.1-alpine
+    container_name: ghost_app
+    restart: always
+    ports:
+      - 2368
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.${COMPOSE_PROJECT_NAME}.rule=Host(`${TRAEFIK_HOST}`)
+      - traefik.http.routers.${COMPOSE_PROJECT_NAME}.entrypoints=websecure
+      - traefik.http.routers.${COMPOSE_PROJECT_NAME}.tls.certresolver=letsencrypt
+      - traefik.http.services.${COMPOSE_PROJECT_NAME}.loadbalancer.server.port=2368
+    environment:
+      - NODE_ENV=production
+      - url=https://${TRAEFIK_HOST}
+      - database__client=sqlite3
+    volumes:
+      - ghost-content:/var/lib/ghost/content
+
+volumes:
+  ghost-content:

@@ -1,0 +1,57 @@
+services:
+  evolution_api:
+    image: evoapicloud/evolution-api:latest
+    container_name: evolution_api_app
+    restart: unless-stopped
+    ports:
+      - 8080
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.${COMPOSE_PROJECT_NAME}.rule=Host(`${TRAEFIK_HOST}`)
+      - traefik.http.routers.${COMPOSE_PROJECT_NAME}.entrypoints=websecure
+      - traefik.http.routers.${COMPOSE_PROJECT_NAME}.tls.certresolver=letsencrypt
+      - traefik.http.services.${COMPOSE_PROJECT_NAME}.loadbalancer.server.port=8080
+    environment:
+      SERVER_URL: https://${TRAEFIK_HOST}
+      AUTHENTICATION_API_KEY: ${API_KEY}
+      AUTHENTICATION_EXPOSE_IN_FETCH_INSTANCES: true
+      DATABASE_PROVIDER: postgresql
+      DATABASE_CONNECTION_URI: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres_db:5432/${POSTGRES_DATABASE}?sslmode=disable
+      DATABASE_CONNECTION_CLIENT_NAME: evolution_api_app
+      DATABASE_SAVE_DATA_INSTANCE: true
+      DATABASE_SAVE_DATA_NEW_MESSAGE: true
+      DATABASE_SAVE_MESSAGE_UPDATE: true
+      DATABASE_SAVE_DATA_CONTACTS: true
+      DATABASE_SAVE_DATA_CHATS: true
+      DATABASE_SAVE_DATA_LABELS: true
+      DATABASE_SAVE_DATA_HISTORIC: true
+      DEL_INSTANCE: false
+      CACHE_REDIS_ENABLED: true
+      CACHE_REDIS_URI: redis://redis_db:6379/0
+      CACHE_REDIS_PREFIX_KEY: evolution
+      CACHE_REDIS_SAVE_INSTANCES: false
+      CACHE_LOCAL_ENABLED: false
+      CONFIG_SESSION_PHONE_CLIENT: 'Evolution API V2'
+      CONFIG_SESSION_PHONE_NAME: 'Chrome'
+      QRCODE_LIMIT: '30'
+      RABBITMQ_ENABLED: false
+      RABBITMQ_GLOBAL_ENABLED: false
+      WEBSOCKET_ENABLED: true
+      SQS_ENABLED: false
+      LOG_LEVEL: ERROR,WARN,INFO
+      TELEMETRY_ENABLED: false
+      LANGUAGE: 'en'
+      CORS_ORIGIN: '*'
+      CORS_METHODS: GET,POST,PUT,DELETE
+      CORS_CREDENTIALS: true
+    volumes:
+      - evolution_instances:/evolution/instances
+    networks:
+      - share_network
+    
+volumes:
+  evolution_instances:
+
+networks:
+  share_network:
+    external: true
