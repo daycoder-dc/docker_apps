@@ -15,6 +15,14 @@ services:
       - NODE_ENV=production
       - url=https://${TRAEFIK_HOST}
       - database__client=sqlite3
+      - database__connection__filename=content/data/ghost.db
+      # - mail__transport=SMTP
+      # - mail__options__service=gmail
+      # - mail__options__auth__user=${SMTP_EMAIL}
+      # - mail__options__auth__pass=${SMTP_PASS}
+      # - mail__from=cdairo2204@gmail.com
+      # - mail__fromName=Daycoder
+
     volumes:
       - ghost-content:/var/lib/ghost/content
 
