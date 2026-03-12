@@ -3,8 +3,6 @@ services:
     image: ghost:6.20.1-alpine
     container_name: ghost_app
     restart: always
-    ports:
-      - 2368
     labels:
       - traefik.enable=true
       - traefik.http.routers.${COMPOSE_PROJECT_NAME}.rule=Host(`${TRAEFIK_HOST}`)
@@ -16,13 +14,6 @@ services:
       - url=https://${TRAEFIK_HOST}
       - database__client=sqlite3
       - database__connection__filename=content/data/ghost.db
-      # - mail__transport=SMTP
-      # - mail__options__service=gmail
-      # - mail__options__auth__user=${SMTP_EMAIL}
-      # - mail__options__auth__pass=${SMTP_PASS}
-      # - mail__from=cdairo2204@gmail.com
-      # - mail__fromName=Daycoder
-
     volumes:
       - ghost-content:/var/lib/ghost/content
 
