@@ -1,0 +1,18 @@
+services:
+  ghost:
+    image: ghost:6.20.1-alpine
+    container_name: ghost_app
+    restart: always
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.ghost_app.rule=Host(`${TRAEFIK_HOST}`)
+      - traefik.http.routers.ghost_app.entrypoints=websecure
+      - traefik.http.routers.ghost_app.tls.certresolver=letsencrypt
+      - traefik.http.services.ghost_app.loadbalancer.server.port=2368
+    env_file:
+      - .env
+    volumes:
+      - ghost-content:/var/lib/ghost/content
+
+volumes:
+  ghost-content:

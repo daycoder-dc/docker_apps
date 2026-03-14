@@ -1,0 +1,18 @@
+services:
+  browserless:
+    image: ghcr.io/browserless/chromium
+    container_name: browserless_app
+    restart: unless-stopped
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.browserless_app.rule=Host(`${TRAEFIK_HOST}`)
+      - traefik.http.routers.browserless_app.entrypoints=websecure
+      - traefik.http.routers.browserless_app.tls.certresolver=letsencrypt
+      - traefik.http.services.browserless_app.loadbalancer.server.port=3000
+    env_file:
+      - .env
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://127.0.0.1:3000/docs" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
